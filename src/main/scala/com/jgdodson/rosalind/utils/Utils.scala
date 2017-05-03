@@ -48,15 +48,4 @@ object Utils {
     readFasta(response)
   }
 
-
-  // Generate a random DNA string
-  def randomDNA(len: Int): String = {
-    ???
-  }
-
-  // Generate a random RNA string
-  def randomRNA(len: Int): String = {
-    ???
-  }
-
 }

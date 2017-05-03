@@ -11,13 +11,28 @@ abstract class GeneticString[T <: GeneticString[T]] {
 
   val seq: String
 
-  // The order of the characters is significant as it is used as a default
-  // ordering when manipulating sequences.
-  def alphabet: Seq[Char]
 
+  /**
+    *
+    * @param i The index of the character to return
+    * @return
+    */
+  def apply(i: Int): Char = seq(i)
+
+
+  /**
+    * The number of base pairs in this genetic string
+    *
+    * @return
+    */
   def length: Int = seq.length
 
-  def masses: Map[Char, Double]
+
+  // The order of the characters is significant as it is used as a default
+  // ordering when manipulating sequences.
+  protected def alphabet: Seq[Char]
+
+  protected def masses: Map[Char, Double]
 
   def mass: Double = seq.foldLeft(0.0)(_ + masses(_))
 
@@ -127,18 +142,6 @@ abstract class GeneticString[T <: GeneticString[T]] {
     else None
   }
 
-  /**
-    *
-    * @return
-    */
-  def transitionTable(): Vector[Vector[Int]] = {
-    val inds = alphabet.zipWithIndex.toMap
-    val res = Array.fill(alphabet.length, alphabet.length)(0)
-    for (pair <- seq.sliding(2)) {
-      res(inds(pair(1)))(inds(pair(0))) += 1
-    }
-    res.map(_.toVector).toVector
-  }
 
   // TODO: Finish this
   def longestSharedSplicedMotif(other: T): T = {

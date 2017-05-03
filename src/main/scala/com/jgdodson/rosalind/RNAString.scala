@@ -9,9 +9,9 @@ case class RNAString(seq: String) extends GeneticString[RNAString] {
     throw new Error("RNAString cannot be empty")
   }
 
-  def alphabet: Seq[Char] = RNAString.alphabet
+  protected def alphabet: Seq[Char] = RNAString.alphabet
 
-  def masses = RNAString.masses
+  protected def masses = RNAString.masses
 
   def toDNAString: DNAString = DNAString(seq.replace('U', 'T'))
 

@@ -34,15 +34,15 @@ object DNAStringTest extends Properties("DNAString") {
   }
 
   property("complement-gcContent") = forAll(DNAStrings) { dna =>
-    dna.gcContent == dna.complement.gcContent
+    dna.GCcontent == dna.complement.GCcontent
   }
 
   property("complement-atContent") = forAll(DNAStrings) { dna =>
-    dna.atContent == dna.complement.atContent
+    dna.ATcontent == dna.complement.ATcontent
   }
 
   property("sum-AT/GC") = forAll(DNAStrings) { dna =>
-    val sum = dna.gcContent + dna.atContent
+    val sum = dna.GCcontent + dna.ATcontent
     if (dna.length > 0) sum == 1
     else sum == 0
   }

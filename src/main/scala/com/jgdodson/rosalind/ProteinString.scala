@@ -9,9 +9,9 @@ case class ProteinString(seq: String) extends GeneticString[ProteinString] {
     throw new Error("ProteinString cannot be empty")
   }
 
-  def alphabet: Seq[Char] = ProteinString.alphabet
+  protected def alphabet: Seq[Char] = ProteinString.alphabet
 
-  def masses: Map[Char, Double] = ProteinString.masses
+  protected def masses: Map[Char, Double] = ProteinString.masses
 
   def substring(start: Int, end: Int): ProteinString = {
     ProteinString(seq.substring(start, end))
