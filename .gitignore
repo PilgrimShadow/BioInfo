@@ -20,6 +20,3 @@ project/plugins/project/
 
 # IntelliJ
 .idea/
-
-# Travis-CI
-.travis.yml
