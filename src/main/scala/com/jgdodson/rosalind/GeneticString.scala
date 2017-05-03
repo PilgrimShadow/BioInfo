@@ -1,6 +1,12 @@
 package com.jgdodson.rosalind
 
-// It's weired how the types work out just right... (Curiously Recurring Template Pattern)
+
+/**
+  *
+  * It's weird how the types work out just right... (Curiously Recurring Template Pattern)
+  *
+  * @tparam T
+  */
 abstract class GeneticString[T <: GeneticString[T]] {
 
   val seq: String
@@ -28,17 +34,55 @@ abstract class GeneticString[T <: GeneticString[T]] {
     }._1
   }
 
-  // Based on the Knuth-Morris-Pratt algorithm.
-  def findMotif(other: T): Vector[Int] = {
+
+  /**
+    * Find all occurences of the given motif within this genetic string
+    *
+    * Based on the Knuth-Morris-Pratt algorithm.
+    *
+    * @param motif
+    * @return
+    */
+  def findMotif(motif: T): Vector[Int] = {
 
     (0 until seq.length).foldLeft((Vector[Int](), Set[Int](0))) { (acc, next) =>
-      val updated = acc._2.filter(i => seq(next) == other.seq(i)).map(_ + 1) + 0
+      val updated = acc._2.filter(i => seq(next) == motif.seq(i)).map(_ + 1) + 0
 
-      if (updated.max == other.length) (acc._1 :+ (next - updated.max + 1), updated - updated.max)
+      if (updated.max == motif.length) (acc._1 :+ (next - updated.max + 1), updated - updated.max)
       else (acc._1, updated)
     }._1
   }
 
+  /**
+    * Alternate implementation for testing purposes
+    *
+    * @param motif
+    * @return
+    */
+  def findMotif2(motif: T): Vector[Int] = {
+
+    val candidates = collection.mutable.Set[Int](0)
+    val matches = collection.mutable.Seq[Int]()
+
+    for (i <- 0 until seq.length) {
+      candidates.filter(j => seq(i) == motif.seq(j)).map(_ + 1) + 0
+
+      if (candidates.max == motif.length) {
+        matches :+ (i - motif.length + 1)
+      }
+    }
+
+    // Return the vector of matching indices
+    matches.toVector
+  }
+
+  // TODO: Write a Regex-based motif finder. Compare speeds.
+
+  /**
+    *
+    * @param k
+    * @return
+    */
   def kmerComposition(k: Int): Seq[Int] = {
 
     val indices = Lexf.enumerateFixed(k, alphabet).zipWithIndex.toMap
@@ -49,7 +93,15 @@ abstract class GeneticString[T <: GeneticString[T]] {
     }
   }
 
-  // Allows for strings of different length
+
+  /**
+    * Compute the Hamming distance between this genetic string and another
+    *
+    * Allows for strings of different length
+    *
+    * @param other The other genetic string
+    * @return
+    */
   def hammingDistance(other: T): Int = {
     val min = Math.min(length, other.length)
     val max = Math.max(length, other.length)
@@ -57,6 +109,12 @@ abstract class GeneticString[T <: GeneticString[T]] {
     (0 until min).count(i => seq(i) != other.seq(i)) + (max - min)
   }
 
+
+  /**
+    *
+    * @param motif
+    * @return
+    */
   def findSplicedMotif(motif: T): Option[Vector[Int]] = {
 
     val res = (0 until seq.length).foldLeft(motif.seq, Vector[Int]()) { (acc, i) =>
@@ -69,6 +127,10 @@ abstract class GeneticString[T <: GeneticString[T]] {
     else None
   }
 
+  /**
+    *
+    * @return
+    */
   def transitionTable(): Vector[Vector[Int]] = {
     val inds = alphabet.zipWithIndex.toMap
     val res = Array.fill(alphabet.length, alphabet.length)(0)
