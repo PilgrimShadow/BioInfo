@@ -1,6 +1,6 @@
-package com.jgdodson.rosalind
+package com.jgdodson.bioinfo.rosalind
 
-import utils.Utils
+import com.jgdodson.bioinfo.utils.Utils
 
 object Prob {
 

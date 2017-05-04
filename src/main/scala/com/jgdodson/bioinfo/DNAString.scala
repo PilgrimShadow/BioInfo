@@ -1,4 +1,4 @@
-package com.jgdodson.rosalind
+package com.jgdodson.bioinfo
 
 case class DNAString(seq: String) extends GeneticString[DNAString] {
 
@@ -184,6 +184,7 @@ object DNAString {
     'T' -> 'A'
   )
 
+
   /**
     * Compute the profile matrix for a group of DNAStrings
     *
@@ -194,25 +195,43 @@ object DNAString {
 
     assert(Set(group.map(_.length)).size == 1)
 
-    val len = group.head.length
-
-    val counts = Array.fill(4) {
-      Array.fill[Int](len)(0)
+    val counts = Vector.fill(4) {
+      Array.fill[Int](group.head.length)(0)
     }
 
-    for (string <- group; i <- 0 until string.length) {
-      if (string(i) == 'A') counts(0)(i) += 1
-      else if (string(i) == 'C') counts(1)(i) += 1
-      else if (string(i) == 'G') counts(2)(i) += 1
+    for (dna <- group; i <- 0 until dna.length) {
+      if (dna(i) == 'A') counts(0)(i) += 1
+      else if (dna(i) == 'C') counts(1)(i) += 1
+      else if (dna(i) == 'G') counts(2)(i) += 1
       else counts(3)(i) += 1
     }
 
-    counts.map(_.toVector).toVector
+    counts.map(_.toVector)
+  }
+
+
+  /**
+    *
+    * @param group
+    * @return
+    */
+  def profileMap(group: Seq[DNAString]): Map[Char, Vector[Int]] = {
+
+    assert(Set(group.map(_.length)).size == 1)
+
+    val counts = List('A', 'C', 'G', 'T').map(c => (c, Array.fill[Int](group.head.length)(0))).toMap
+
+    for (dna <- group; i <- 0 until dna.length) {
+      counts(dna(i))(i) += 1
+    }
+
+    counts.mapValues(_.toVector)
   }
 
   def consensus(group: Seq[DNAString]): DNAString = {
     ???
   }
+
 
   // TODO: Refactor this
   def consensusFromProfile(profile: Vector[Vector[Int]]): DNAString = {
@@ -226,13 +245,41 @@ object DNAString {
       else 'T'
     }
 
-    DNAString((for (i <- profile.head.indices) yield {
-      decide(profile(0)(i), profile(1)(i), profile(2)(i), profile(3)(i))
-    }).mkString(""))
+    DNAString(profile.head.indices.map(i => decide(profile(0)(i), profile(1)(i), profile(2)(i), profile(3)(i))).mkString(""))
   }
 
+
+  /**
+    * Compute a matrix of Hamming distances for the group of DNAStrings
+    *
+    * TODO: VectorBuilder might be useful here
+    *
+    * @param group
+    * @return
+    */
   def distanceMatrix(group: Seq[DNAString]): Vector[Vector[Int]] = {
-    ???
+
+    // All sequences have same length
+    assert(Set(group.map(_.length)).size == 1)
+
+    val distMatrix = Vector.fill(group.length) {
+      Array.fill[Int](group.length)(0)
+    }
+
+    for (i <- group.indices; j <- i + 1 until group.length) {
+
+      val dist = group(i).hammingDistance(group(j))
+
+      distMatrix(i)(j) = dist
+      distMatrix(j)(i) = dist
+    }
+
+    distMatrix.map(_.toVector)
+  }
+
+  def normalizedDistanceMatrix(group: Seq[DNAString]): Vector[Vector[Double]] = {
+
+    distanceMatrix(group).map(_.map(dist => dist.toDouble / group.head.length))
   }
 
 }

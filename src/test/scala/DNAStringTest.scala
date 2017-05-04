@@ -1,4 +1,4 @@
-import com.jgdodson.rosalind.DNAString
+import com.jgdodson.bioinfo.DNAString
 import org.scalacheck.Properties
 import org.scalacheck.Prop.forAll
 import org.scalacheck.Gen

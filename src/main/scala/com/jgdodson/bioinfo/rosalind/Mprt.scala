@@ -1,7 +1,8 @@
-package com.jgdodson.rosalind
+package com.jgdodson.bioinfo.rosalind
+
+import com.jgdodson.bioinfo.utils.Utils
 
 import scalaj.http.{Http, HttpOptions}
-import utils.Utils
 
 
 object Mprt {

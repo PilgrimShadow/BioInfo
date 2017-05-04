@@ -1,6 +1,6 @@
-package com.jgdodson.rosalind
+package com.jgdodson.bioinfo.rosalind
 
-import utils.Utils
+import com.jgdodson.bioinfo.utils.Utils
 
 object Grph {
 
@@ -18,8 +18,8 @@ object Grph {
     }
 
     for {
-      i <- 0 until strings.length
-      j <- 0 until strings.length if i != j && overlap(3, strings(i)._2, strings(j)._2)
+      i <- strings.indices
+      j <- strings.indices if i != j && overlap(3, strings(i)._2, strings(j)._2)
     } yield (strings(i)._1, strings(j)._1)
   }
 

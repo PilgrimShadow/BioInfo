@@ -1,4 +1,4 @@
-package com.jgdodson.rosalind
+package com.jgdodson.bioinfo.rosalind
 
 object Lexf {
 

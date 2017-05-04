@@ -1,4 +1,4 @@
-package com.jgdodson.rosalind
+package com.jgdodson.bioinfo
 
 case class RNAString(seq: String) extends GeneticString[RNAString] {
 

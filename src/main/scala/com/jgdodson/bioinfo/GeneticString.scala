@@ -1,5 +1,6 @@
-package com.jgdodson.rosalind
+package com.jgdodson.bioinfo
 
+import com.jgdodson.bioinfo.rosalind.Lexf
 
 /**
   *
@@ -40,6 +41,29 @@ abstract class GeneticString[T <: GeneticString[T]] {
 
   def substring(start: Int, end: Int): T
 
+
+  /**
+    * Indicate whether this GeneticString contains a spliced version of the given motif
+    *
+    * @param motif
+    * @return
+    */
+  def containsSplicedMotif(motif: T): Boolean = {
+
+    var rest = 0
+
+    for (char <- motif.seq) {
+      rest = this.seq.indexOf(char, rest) + 1
+
+      if (rest == 0) {
+        return false
+      }
+    }
+
+    true
+  }
+
+
   // TODO: convert this into an explicit motif finding function
   def failureArray: Vector[Int] = {
 
@@ -51,7 +75,7 @@ abstract class GeneticString[T <: GeneticString[T]] {
 
 
   /**
-    * Find all occurences of the given motif within this genetic string
+    * Find all occurrences of the given motif within this genetic string
     *
     * Based on the Knuth-Morris-Pratt algorithm.
     *
@@ -126,6 +150,7 @@ abstract class GeneticString[T <: GeneticString[T]] {
 
 
   /**
+    * Finds the starting index of all spliced occurrences of the given motif
     *
     * @param motif
     * @return
@@ -143,14 +168,42 @@ abstract class GeneticString[T <: GeneticString[T]] {
   }
 
 
-  // TODO: Finish this
-  def longestSharedSplicedMotif(other: T): T = {
+  /**
+    * Find one of the longest shared spliced motifs
+    *
+    * TODO: This should return a T
+    *
+    * @param other
+    * @return
+    */
+  def longestSharedSplicedMotif(other: T): String = {
 
-    val minLen = math.min(seq.length, other.seq.length)
+    val minSeq = if (this.length == other.length) this else List(this, other).minBy(_.length)
+    val maxSeq = if (this.length == other.length) other else List(this, other).maxBy(_.length)
 
-    (0 until minLen).foldLeft(((Set[Char](), Set[Char]()), "")) { (acc, next) =>
-      ???
+    val t = Vector.fill(minSeq.length)(collection.mutable.Set[Set[Int]]())
+
+    for ((char, i) <- minSeq.seq.zipWithIndex) {
+
+      val x = maxSeq.seq.indexOf(char)
+
+      if (x != -1) {
+        t(i).add(Set(x))
+      }
+
+      // Update all previous SSM candidates
+      for (j <- 0 until i) {
+        for (ssm <- t(j)) {
+
+          val x = maxSeq.seq.indexOf(char, ssm.max + 1)
+          if (x != -1) {
+            t(j).add(ssm + x)
+          }
+        }
+      }
     }
-    ???
+
+    val q = t.map(_.maxBy(_.size)).maxBy(_.size)
+    q.toVector.sorted.map(i => maxSeq(i)).mkString
   }
 }

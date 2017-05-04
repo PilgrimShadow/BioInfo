@@ -1,6 +1,6 @@
-package com.jgdodson.rosalind
+package com.jgdodson.bioinfo.rosalind
 
-import utils.Utils.readFastaFile
+import com.jgdodson.bioinfo.utils.Utils.readFastaFile
 
 object Long {
 

@@ -1,4 +1,4 @@
-import com.jgdodson.rosalind.ProteinString
+import com.jgdodson.bioinfo.ProteinString
 import org.scalacheck.Properties
 import org.scalacheck.Prop.forAll
 import org.scalacheck.Gen

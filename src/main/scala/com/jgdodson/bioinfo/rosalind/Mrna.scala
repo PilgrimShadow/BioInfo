@@ -1,4 +1,4 @@
-package com.jgdodson.rosalind
+package com.jgdodson.bioinfo.rosalind
 
 // http://rosalind.info/problems/mrna/
 object Mrna {

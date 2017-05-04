@@ -1,6 +1,6 @@
-package com.jgdodson.rosalind
+package com.jgdodson.bioinfo.rosalind
 
-import utils.Utils.readLines
+import com.jgdodson.bioinfo.utils.Utils.readLines
 
 object Lgis {
 

@@ -1,4 +1,4 @@
-package com.jgdodson.rosalind.utils
+package com.jgdodson.bioinfo.utils
 
 import scalaj.http._
 
