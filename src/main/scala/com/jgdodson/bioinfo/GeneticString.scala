@@ -1,6 +1,9 @@
 package com.jgdodson.bioinfo
 
+// TODO: Remove this dependency
 import com.jgdodson.bioinfo.rosalind.Lexf
+
+import scala.collection.mutable
 
 /**
   *
@@ -45,10 +48,14 @@ abstract class GeneticString[T <: GeneticString[T]] {
   /**
     * Indicate whether this GeneticString contains a spliced version of the given motif
     *
-    * @param motif
+    * @param motif The motif to search for
     * @return
     */
   def containsSplicedMotif(motif: T): Boolean = {
+
+    // Motif is not longer than this sequence
+    // Should we return false in this case or throw?
+    assert(motif.length <= this.length)
 
     var rest = 0
 
@@ -100,8 +107,8 @@ abstract class GeneticString[T <: GeneticString[T]] {
     */
   def findMotif2(motif: T): Vector[Int] = {
 
-    val candidates = collection.mutable.Set[Int](0)
-    val matches = collection.mutable.Seq[Int]()
+    val candidates = mutable.Set[Int](0)
+    val matches = mutable.Seq[Int]()
 
     for (i <- 0 until seq.length) {
       candidates.filter(j => seq(i) == motif.seq(j)).map(_ + 1) + 0
@@ -171,17 +178,97 @@ abstract class GeneticString[T <: GeneticString[T]] {
   /**
     * Find one of the longest shared spliced motifs
     *
+    * TODO: A function that returns ALL of the longest SSMs
+    *
+    * @param other The sequence to search against this sequence
+    * @return
+    */
+  def longestSharedSplicedMotif(other: T): String = {
+
+    // Determine which sequence is shorter/longer
+    val minSeq = if (this.length == other.length) this else List(this, other).minBy(_.length)
+    val maxSeq = if (this.length == other.length) other else List(this, other).maxBy(_.length)
+
+    // Store partial solutions as we go
+    val t = mutable.Map[Int, String](-1 -> "")
+
+    for (char <- minSeq.seq) {
+
+      // Extend all of our partial SSMs with the next char.
+      // Ensure we don't modify the same t that we iterate over
+      // TODO: Likely quicker to create an update map and then modify t after this for loop
+      for ((k, v) <- t.toMap) {
+
+        // The next match for this SSM
+        val x = maxSeq.seq.indexOf(char, k + 1)
+
+        // If a match was found
+        if (x != -1) {
+
+          // Update the SSM ending at index x if necessary
+          if (!t.contains(x) || (v.length >= t(x).length)) {
+            // TODO: This will modify the update map instead
+            t(x) = v + char
+          }
+
+        }
+
+      }
+
+      // TODO: Update t with the update map here
+
+    }
+
+    // Return one of the longest SSMs
+    t.maxBy(_._2.length)._2
+  }
+
+  def longestSharedSplicedMotif3(other: T): String = {
+
+    val minSeq = if (this.length == other.length) this else List(this, other).minBy(_.length)
+    val maxSeq = if (this.length == other.length) other else List(this, other).maxBy(_.length)
+
+    val t = Vector.fill(minSeq.length)(mutable.Set[Set[Int]]())
+
+    val r = Range(0, minSeq.length).dropWhile(i => maxSeq.seq.indexOf(minSeq(i)) == -1)
+
+    // The first shared substring
+    t(r.min).add(Set(maxSeq.seq.indexOf(minSeq(r.min))))
+
+    for (i <- r.drop(1)) {
+
+      val updated = t.slice(0, i).map(_.map(ssm => {
+        val x = maxSeq.seq.indexOf(minSeq(i), ssm.max + 1)
+
+        if (x == -1) ssm else ssm + x
+      }))
+
+      val maxSize = updated.map(_.map(_.size).max).max
+
+      val n: Vector[Set[Int]] = updated.flatMap(_.filter(ssm => ssm.size == maxSize))
+
+      for (ssm <- n) {
+        t(i).add(ssm)
+      }
+    }
+
+    t.last.head.toVector.sorted.map(i => maxSeq(i)).mkString
+  }
+
+  /**
+    * Find one of the longest shared spliced motifs
+    *
     * TODO: This should return a T
     *
     * @param other
     * @return
     */
-  def longestSharedSplicedMotif(other: T): String = {
+  def longestSharedSplicedMotif2(other: T): String = {
 
     val minSeq = if (this.length == other.length) this else List(this, other).minBy(_.length)
     val maxSeq = if (this.length == other.length) other else List(this, other).maxBy(_.length)
 
-    val t = Vector.fill(minSeq.length)(collection.mutable.Set[Set[Int]]())
+    val t = Vector.fill(minSeq.length)(mutable.Set[Set[Int]]())
 
     for ((char, i) <- minSeq.seq.zipWithIndex) {
 

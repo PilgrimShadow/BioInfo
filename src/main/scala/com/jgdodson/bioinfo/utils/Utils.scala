@@ -48,4 +48,9 @@ object Utils {
     readFasta(response)
   }
 
+  def shortestCommonSuperSequence(s1: String, s2: String): String = {
+
+    ???
+  }
+
 }
