@@ -196,7 +196,7 @@ abstract class GeneticString[T <: GeneticString[T]] {
 
       // Extend all of our partial SSMs with the next char.
       // Ensure we don't modify the same t that we iterate over
-      // TODO: Likely quicker to create an update map and then modify t after this for loop
+      // TODO: Likely quicker to create an update map and then modify t after this for loop (well, maybe...)
       for ((k, v) <- t.toMap) {
 
         // The next match for this SSM
@@ -222,6 +222,42 @@ abstract class GeneticString[T <: GeneticString[T]] {
     // Return one of the longest SSMs
     t.maxBy(_._2.length)._2
   }
+
+
+  /**
+    *
+    * @param other
+    * @return
+    */
+  def shortestCommonSuperSequence(other: T): String = {
+
+    val lssm = this.longestSharedSplicedMotif(other)
+
+    var i = 0
+    var j = 0
+
+    val res = new mutable.StringBuilder()
+
+    for (c <- lssm) {
+
+      val s = this.seq.substring(i, this.seq.indexOf(c, i))
+      val t = other.seq.substring(j, other.seq.indexOf(c, j) + 1)
+
+      // Must add t after s
+      res ++= s
+      res ++= t
+
+      i += s.length + 1
+      j += t.length
+    }
+
+    // Add any leftovers
+    res ++= this.seq.substring(i)
+    res ++= other.seq.substring(j)
+
+    res.toString
+  }
+
 
   def longestSharedSplicedMotif3(other: T): String = {
 
