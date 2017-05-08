@@ -1,5 +1,7 @@
 package com.jgdodson.bioinfo
 
+import utils.Utils.nearestMatch
+
 case class ProteinString(seq: String) extends GeneticString[ProteinString] {
 
   // Error checking during initialization.
@@ -22,6 +24,26 @@ case class ProteinString(seq: String) extends GeneticString[ProteinString] {
 }
 
 object ProteinString {
+
+  def nearestAmino(searchMass: Double): Char = {
+
+    masses.mapValues(actualMass => math.abs(actualMass - searchMass)).minBy(_._2)._1
+  }
+
+
+  def fromSpectrum(prefixMasses: Seq[Double]): ProteinString = {
+
+    ProteinString(prefixMasses.indices.drop(1).map(i => nearestAmino(prefixMasses(i) - prefixMasses(i - 1))).mkString)
+  }
+
+
+  def fromFullSpectrum(ionMasses: Seq[Double], peptideMass: Double): ProteinString = {
+
+    assert(ionMasses.length % 2 == 0)
+
+    ???
+  }
+
 
   // The character 'X' is used for the stop codon.
   val alphabet = Seq('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L',

@@ -48,4 +48,10 @@ object Utils {
     readFasta(response)
   }
 
+
+  def nearestMatch(target: Double, pool: Iterable[Double]): Double = {
+
+    pool.minBy(candidate => math.abs(candidate - target))
+  }
+
 }

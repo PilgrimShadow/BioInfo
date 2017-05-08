@@ -291,6 +291,7 @@ abstract class GeneticString[T <: GeneticString[T]] {
     t.last.head.toVector.sorted.map(i => maxSeq(i)).mkString
   }
 
+
   /**
     * Find one of the longest shared spliced motifs
     *
