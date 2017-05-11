@@ -293,6 +293,39 @@ abstract class GeneticString[T <: GeneticString[T]] {
 
 
   /**
+    * Compute the edit distance between this genetic string and another
+    *
+    * @param other The other genetic string
+    * @return
+    */
+  def editDistance(other: T): Int = {
+
+    val lssm = this.longestSharedSplicedMotif(other)
+
+    var i = 0
+    var j = 0
+
+    var res = 0
+
+    for (c <- lssm) {
+
+      val s = this.seq.substring(i, this.seq.indexOf(c, i))
+      val t = other.seq.substring(j, other.seq.indexOf(c, j))
+
+      res += math.max(s.length, t.length)
+
+      i += s.length + 1
+      j += t.length + 1
+    }
+
+    // Add any leftovers
+    res += math.max(this.seq.substring(i).length, other.seq.substring(j).length)
+
+    res
+  }
+
+
+  /**
     * Find one of the longest shared spliced motifs
     *
     * TODO: This should return a T

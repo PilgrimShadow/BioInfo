@@ -41,6 +41,17 @@ object ProteinString {
 
     assert(ionMasses.length % 2 == 0)
 
+    val remaining = collection.mutable.Set.empty[Double]
+
+    remaining ++= ionMasses
+    remaining.remove(ionMasses.min)
+
+    val res = Array[Double](ionMasses.min)
+
+    for (m <- remaining) {
+
+    }
+
     ???
   }
 
